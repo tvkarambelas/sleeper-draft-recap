@@ -70,6 +70,39 @@ header.row {
   }
 }
 
+#main-nav {
+  padding: 0.5rem 0;
+
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+
+    li {
+      display: inline-block;
+
+      a {
+        text-align: center;
+        text-decoration: none;
+        margin: 0 1rem;
+
+        &.active {
+          padding-bottom: 0.25rem;
+          border-bottom: 3px solid $gray;
+        }
+      }
+
+      &:first-child a {
+        margin-left: 0;
+      }
+
+      &:last-child a {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
 @media all and (min-width: 768px) {
   .cols-2 {
     display: flex;
@@ -79,6 +112,24 @@ header.row {
       width: 45%;
     }
   }
+}
+
+ol.standings {
+  list-style: none;
+  padding-left: 0;
+  column-count: 2;
+}
+
+.first svg {
+  color: gold;
+}
+
+.second svg {
+  color: silver;
+}
+
+.third svg {
+  color: #CD7F32;
 }
 
 table.styled {
@@ -130,4 +181,10 @@ table.styled {
   }
 
 
+}
+
+.sm-label {
+  display: block;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
