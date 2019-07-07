@@ -95,9 +95,9 @@ function outputOwners() {
       ownerCount = owners.length;
 
   for (var i = 0; i < owners.length; i++) {
-    var ownerCont = document.createElement("DIV");
-    var ownerTitle = document.createElement("H3");
-    var ownerPicksCont = document.createElement("UL");
+    var ownerCont = document.createElement('DIV');
+    var ownerTitle = document.createElement('H3');
+    var ownerPicksCont = document.createElement('UL');
     var owner = owners[i];
     var ownerPicks = owner['picks']; 
 
@@ -110,7 +110,7 @@ function outputOwners() {
 
       var pickNumberInRound = pick['pick_no']-((ownerCount*pick['round'])-ownerCount);
 
-      var pickCont = document.createElement("LI");
+      var pickCont = document.createElement('LI');
       pickCont.appendChild(document.createTextNode(formatNumber(pick['round'])+'.'+formatNumber(pickNumberInRound)+ ' - '+pick['metadata']['first_name']+' '+pick['metadata']['last_name']));
       ownerPicksCont.appendChild(pickCont);
     }
@@ -137,12 +137,33 @@ function sortByKey(array, key) {
 // 2018 start-up: 334144315779461120
 // rookie: 387312461386117120
 
-getDraft('334144315779461120')
-.then(function(draftPicks) {
-  console.log('draft picks');
-  console.log(draftPicks);
+var mainCont = document.getElementById('content'),
+    errorsCont = document.getElementById('errors');
 
-  const userPickMap = groupBy(draftPicks, draftPick => draftPick.picked_by).forEach(updateOwners);
+mainCont.style.display = 'none';
+errorsCont.style.display = 'none';
+errorsCont.appendChild(document.createTextNode('There was an error retrieving the supplied draft. Please check the ID and try again.'));
+
+document.getElementById('draft-id-form').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  var draftID = document.getElementById('draft-id').value;
+    
+  getDraft(draftID)
+  .then(function(draftPicks) {
+    console.log('draft picks');
+    console.log(draftPicks);
+
+    if (draftPicks) {
+      const userPickMap = groupBy(draftPicks, draftPick => draftPick.picked_by).forEach(updateOwners);
+
+      mainCont.style.display = 'block';
+      errorsCont.style.display = 'none';
+    }
+    else {
+      mainCont.style.display = 'none';
+      errorsCont.style.display = 'block';
+    } 
+  });
 });
 
 function getPlayerNameLengths() {
@@ -178,12 +199,12 @@ function getPlayerNameLengths() {
   console.log(ownerPlayerNameLengths);
 
   // output
-  var cont = document.createElement("OL");
+  var cont = document.createElement('OL');
 
   for (var i = 0; i < ownerPlayerNameLengths.length; i++) {
     var owner = ownerPlayerNameLengths[i];
     
-    var ownerCont = document.createElement("LI");
+    var ownerCont = document.createElement('LI');
     ownerCont.appendChild(document.createTextNode(owner['charCount']+' total chars - '+owner['display_name']));
     cont.appendChild(ownerCont);
   }
