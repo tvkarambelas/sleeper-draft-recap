@@ -5,8 +5,6 @@
   - average player number
   - most from the same team
   - by position
-  - longest names
-  - shortest names
 */
 
 var owners = [],
