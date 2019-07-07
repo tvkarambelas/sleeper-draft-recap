@@ -9,15 +9,8 @@
   - shortest names
 */
 
-var owners = [];
-
-function searchOwners(idVal) {
-  for (var i=0; i < owners.length; i++) {
-    if (owners[i].user_id === idVal) {
-      return i;
-    }
-  }
-}
+var owners = [],
+    ownersUpdated = 0;
 
 function groupBy(list, keyGetter) {
   const map = new Map();
@@ -46,32 +39,80 @@ async function getOwnerData(userID) {
   return data;
 }
 
-async function updateOwners(value, key, map) {
+function updateOwners(value, key, map) {
+  var draftPosition = value[0].pick_no - 1; // -1 because arrays are zero-based
+
   if (key) {
     getOwnerData(key)
     .then(function(ownerData) {
-      owners.push(
+      owners[draftPosition] = 
         {
           user_id: key,
           picks: value,
           display_name: ownerData['display_name'],
           username: ownerData['username'],
-          avatar: ownerData['avatar']
+          avatar: ownerData['avatar'],
+          draftPosition: draftPosition
         }
-      );
+      ;
+
+      ownersUpdated++;
+
+      if(ownersUpdated === map.size) {
+        outputOwners();
+      }
     });
   }
   else {
     // user not available, need to adjust logic to support more than one
-    owners.push(
+    owners[draftPosition] =
       {
         user_id: 'noUser',
         picks: value,
         display_name: 'No User',
         username: 'No User',
-        avatar: ''
+        avatar: '',
+        draftPosition: draftPosition
       }
-    );
+    ;
+
+    ownersUpdated++;
+
+    if(ownersUpdated === map.size) {
+      outputOwners();
+    }
+  } 
+}
+
+function outputOwners() {
+  console.log('starting to output owners');
+  console.log(owners);
+
+  var picksCont = document.getElementById('picks');
+  
+  for (var i = 0; i < owners.length; i++) {
+    var ownerCont = document.createElement("DIV");
+    var ownerTitle = document.createElement("H2");
+    var ownerPicksCont = document.createElement("UL");
+    var owner = owners[i];
+    var ownerPicks = owner['picks'];
+
+    console.log('outputting owner '+owner['display_name']);    
+
+    ownerTitle.appendChild(document.createTextNode(owner['display_name']))
+    ownerCont.appendChild(ownerTitle);
+
+    // loop over picks
+    for (var i2 = 0; i2 < ownerPicks.length; i2++) {
+      var pick = ownerPicks[i2];
+
+      var pickCont = document.createElement("LI");
+      pickCont.appendChild(document.createTextNode(pick['pick_no']+ ' - '+pick['metadata']['first_name']+' '+pick['metadata']['last_name']))
+      ownerPicksCont.appendChild(pickCont);
+    }
+
+    ownerCont.appendChild(ownerPicksCont);
+    picksCont.appendChild(ownerCont);
   }
 }
 
@@ -86,8 +127,7 @@ getDraft('334144315779461120')
   console.log(draftPicks);
 
   const userPickMap = groupBy(draftPicks, draftPick => draftPick.picked_by).forEach(updateOwners);
-
-  console.log('owners');
-  console.log(owners);
 });
+
+
 
