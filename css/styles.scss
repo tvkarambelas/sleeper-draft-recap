@@ -1,0 +1,190 @@
+$white: #eee;
+$black: #222831;
+$gray: #393e46;
+$orange: #b55400;
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 1em;
+  padding: 1.5rem;
+  margin: 0;
+}
+
+h1,h2,h3,h4,h5 {
+  font-family: 'Fjalla One', sans-serif;
+  margin-bottom: 1rem;
+}
+
+h1 { font-size: 2.25rem }
+h2 { font-size: 2rem }
+h3 { font-size: 1.75rem }
+h4 { font-size: 1.5rem }
+h5 { font-size: 1.25rem }
+
+h3 {
+  color: $gray;
+}
+
+header h1 {
+  margin: 0 0 0.5rem;
+}
+
+.site-title {
+  font-family: 'Fjalla One', sans-serif;
+  font-size: 2.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+a {
+  color: $orange;
+  transition: 0.2s ease;
+
+  &:hover {
+    color: darken($orange,20%);
+  }
+}
+
+.a11y-hidden { 
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+header.row {
+  padding-bottom: 0;
+}
+
+.row {
+  padding: 2rem 0;
+
+  &.cond {
+    padding: 1rem 0;
+  }
+
+  > .inner {
+    max-width: 1000px;
+    margin: auto;
+  }
+}
+
+#main-nav {
+  padding: 0.5rem 0;
+
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+
+    li {
+      display: inline-block;
+
+      a {
+        text-align: center;
+        text-decoration: none;
+        margin: 0 1rem;
+
+        &.active {
+          padding-bottom: 0.25rem;
+          border-bottom: 3px solid $gray;
+        }
+      }
+
+      &:first-child a {
+        margin-left: 0;
+      }
+
+      &:last-child a {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+@media all and (min-width: 768px) {
+  .cols-2 {
+    display: flex;
+    justify-content: space-between;
+  
+    > div {
+      width: 45%;
+    }
+  }
+}
+
+ol.standings {
+  list-style: none;
+  padding-left: 0;
+  column-count: 2;
+}
+
+.first svg {
+  color: gold;
+}
+
+.second svg {
+  color: silver;
+}
+
+.third svg {
+  color: #CD7F32;
+}
+
+table.styled {
+  width: 100%;
+
+  th {
+    text-align: left;
+    width: 25%;
+    background-color: $gray;
+    color: $white;
+    border-bottom: 4px solid $orange;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #eee;
+  }
+
+  th,td {
+    padding: 0.5rem;
+  }
+
+  &.weekly-reward {
+    th:nth-child(1) {
+      width: 10%;
+    }
+
+    th:nth-child(2),
+    th:nth-child(3) {
+      width: 35%;
+    }
+
+    th:nth-child(4) {
+      width: 20%;
+    }
+  }
+
+  &.rewards-cond {
+    th:nth-child(1) {
+      width: 10%;
+    }
+
+    th:nth-child(2) {
+      width: 20%;
+    }
+
+    th:nth-child(3) {
+      width: 70%;
+    }
+  }
+
+
+}
+
+.sm-label {
+  display: block;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
