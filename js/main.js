@@ -10,7 +10,8 @@
 */
 
 var owners = [],
-    ownersUpdated = 0;
+    ownersUpdated = 0,
+    ownersReady = false;
 
 function groupBy(list, keyGetter) {
   const map = new Map();
@@ -59,15 +60,17 @@ function updateOwners(value, key, map) {
       ownersUpdated++;
 
       if(ownersUpdated === map.size) {
+        ownersReady = true;
         outputOwners();
+        getPlayerNameLengths();
       }
     });
   }
   else {
-    // user not available, need to adjust logic to support more than one
+    // user not available
     owners[draftPosition] =
       {
-        user_id: 'noUser',
+        user_id: 'noUser'+draftPosition,
         picks: value,
         display_name: 'No User',
         username: 'No User',
@@ -79,7 +82,9 @@ function updateOwners(value, key, map) {
     ownersUpdated++;
 
     if(ownersUpdated === map.size) {
+      ownersReady = true;
       outputOwners();
+      getPlayerNameLengths();
     }
   } 
 }
@@ -88,16 +93,15 @@ function outputOwners() {
   console.log('starting to output owners');
   console.log(owners);
 
-  var picksCont = document.getElementById('picks');
-  
+  var picksCont = document.getElementById('picks'),
+      ownerCount = owners.length;
+
   for (var i = 0; i < owners.length; i++) {
     var ownerCont = document.createElement("DIV");
-    var ownerTitle = document.createElement("H2");
+    var ownerTitle = document.createElement("H3");
     var ownerPicksCont = document.createElement("UL");
     var owner = owners[i];
-    var ownerPicks = owner['picks'];
-
-    console.log('outputting owner '+owner['display_name']);    
+    var ownerPicks = owner['picks']; 
 
     ownerTitle.appendChild(document.createTextNode(owner['display_name']))
     ownerCont.appendChild(ownerTitle);
@@ -106,14 +110,28 @@ function outputOwners() {
     for (var i2 = 0; i2 < ownerPicks.length; i2++) {
       var pick = ownerPicks[i2];
 
+      var pickNumberInRound = pick['pick_no']-((ownerCount*pick['round'])-ownerCount);
+
       var pickCont = document.createElement("LI");
-      pickCont.appendChild(document.createTextNode(pick['pick_no']+ ' - '+pick['metadata']['first_name']+' '+pick['metadata']['last_name']))
+      pickCont.appendChild(document.createTextNode(formatNumber(pick['round'])+'.'+formatNumber(pickNumberInRound)+ ' - '+pick['metadata']['first_name']+' '+pick['metadata']['last_name']));
       ownerPicksCont.appendChild(pickCont);
     }
 
     ownerCont.appendChild(ownerPicksCont);
     picksCont.appendChild(ownerCont);
   }
+}
+
+function formatNumber(num) {
+  // formats numbers less than 10 to have zero in front
+  return num > 9 ? "" + num: "0" + num;
+}
+
+function sortByKey(array, key) {
+  return array.sort(function(a, b) {
+    var x = a[key]; var y = b[key];
+    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+  });
 }
 
 // get draft
@@ -128,6 +146,55 @@ getDraft('334144315779461120')
 
   const userPickMap = groupBy(draftPicks, draftPick => draftPick.picked_by).forEach(updateOwners);
 });
+
+function getPlayerNameLengths() {
+  console.log('player name lengths');
+
+  var ownerPlayerNameLengths = [];
+
+  for (var i = 0; i < owners.length; i++) {
+    var owner = owners[i],
+        charCount = 0;
+
+    for (var i2 = 0; i2 < owner['picks'].length; i2++) {
+      var pick = owner['picks'][i2],
+          fnLength = 0,
+          lnLength = 0;
+
+      fnLength = pick.metadata.first_name.length;
+      lnLength = pick.metadata.last_name.length;
+
+      charCount = charCount + fnLength + lnLength;
+    }
+
+    ownerPlayerNameLengths.push(
+      {
+        display_name: owner['display_name'],
+        charCount: charCount
+      }
+    );
+  }
+
+  ownerPlayerNameLengths = sortByKey(ownerPlayerNameLengths,'charCount').reverse();
+
+  console.log(ownerPlayerNameLengths);
+
+  // output
+  var cont = document.createElement("OL");
+
+  for (var i = 0; i < ownerPlayerNameLengths.length; i++) {
+    var owner = ownerPlayerNameLengths[i];
+    
+    var ownerCont = document.createElement("LI");
+    ownerCont.appendChild(document.createTextNode(owner['charCount']+' total chars - '+owner['display_name']));
+    cont.appendChild(ownerCont);
+  }
+
+  document.getElementById('player-name-length').appendChild(cont);
+}
+
+
+
 
 
 
