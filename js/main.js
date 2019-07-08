@@ -1,12 +1,3 @@
-/*
-  ideas:
-  - most experienced roster
-  - least experienced roster
-  - average player number
-  - most from the same team
-  - by position
-*/
-
 var owners = [],
     ownersUpdated = 0,
     ownersReady = false;
@@ -61,6 +52,7 @@ function updateOwners(value, key, map) {
         ownersReady = true;
         outputOwners();
         getPlayerNameLengths();
+        getPlayerExperience();
       }
     });
   }
@@ -70,8 +62,8 @@ function updateOwners(value, key, map) {
       {
         user_id: 'noUser'+draftPosition,
         picks: value,
-        display_name: 'No User',
-        username: 'No User',
+        display_name: 'Unknown Owner',
+        username: 'Unknown Owner',
         avatar: '',
         draftPosition: draftPosition
       }
@@ -83,6 +75,7 @@ function updateOwners(value, key, map) {
       ownersReady = true;
       outputOwners();
       getPlayerNameLengths();
+      getPlayerExperience();
     }
   } 
 }
@@ -133,10 +126,6 @@ function sortByKey(array, key) {
 }
 
 // get draft
-
-// 2018 start-up: 334144315779461120
-// rookie: 387312461386117120
-
 var mainCont = document.getElementById('content'),
     errorsCont = document.getElementById('errors');
 
@@ -212,6 +201,50 @@ function getPlayerNameLengths() {
   document.getElementById('player-name-length').appendChild(cont);
 }
 
+function getPlayerExperience() {
+  console.log('player experience');
+
+  var ownerPlayerExp = [];
+
+  for (var i = 0; i < owners.length; i++) {
+    var owner = owners[i],
+        yearsExp = 0;
+
+    for (var i2 = 0; i2 < owner['picks'].length; i2++) {
+      var pick = owner['picks'][i2];
+
+      var exp = parseInt(pick.metadata.years_exp);
+
+      if (!isNaN(exp)) {
+        yearsExp = yearsExp + exp;
+      } 
+    }
+
+    ownerPlayerExp.push(
+      {
+        display_name: owner['display_name'],
+        yearsExp: yearsExp
+      }
+    );
+  }
+
+  ownerPlayerExp = sortByKey(ownerPlayerExp,'yearsExp').reverse();
+
+  console.log(ownerPlayerExp);
+
+  // output
+  var cont = document.createElement('OL');
+
+  for (var i = 0; i < ownerPlayerExp.length; i++) {
+    var owner = ownerPlayerExp[i];
+    
+    var ownerCont = document.createElement('LI');
+    ownerCont.appendChild(document.createTextNode(owner['yearsExp']+' total years experience - '+owner['display_name']));
+    cont.appendChild(ownerCont);
+  }
+
+  document.getElementById('player-exp').appendChild(cont);
+}
 
 
 

@@ -18,11 +18,19 @@
   <main>
     <div class="row">
       <div class="inner">
-        <form id="draft-id-form" method="POST">
+        <form id="draft-id-form">
           <label for="draft-id">Draft ID</label>
           <input type="text" id="draft-id" name="draft-id" />
           <input type="submit" id="draft-submit" value="Go" />
         </form>
+
+        <p>
+          Examples:
+          <ul>
+            <li>Startup Dynasty: 334144315779461120</li>
+            <li>Rookie: 387312461386117120</li>
+          </ul>
+        </p>
 
         <div id="errors"></div>
       </div>
@@ -36,6 +44,10 @@
 
         <div id="player-name-length">
           <h2>Owners w/ Longest Player Names</h2>
+        </div>
+
+        <div id="player-exp">
+          <h2>Owners w/ Most Experienced Players</h2>
         </div>
       </div>
     </div>
