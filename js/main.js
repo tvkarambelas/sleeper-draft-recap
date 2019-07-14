@@ -17,6 +17,14 @@ function groupBy(list, keyGetter) {
   return map;
 }
 
+function searchArr(nameKey, myArray){
+  for (var i=0; i < myArray.length; i++) {
+    if (myArray[i].name === nameKey) {
+      return myArray[i];
+    }
+  }
+}
+
 async function getDraft(draftID) {
   let response = await fetch('https://api.sleeper.app/v1/draft/'+draftID+'/picks');
   let data = await response.json();
@@ -93,6 +101,7 @@ function outputOwners() {
     var ownerPicksCont = document.createElement('UL');
     var owner = owners[i];
     var ownerPicks = owner['picks']; 
+    var ownerADPGrade = 0;
 
     ownerTitle.appendChild(document.createTextNode(owner['display_name']))
     ownerCont.appendChild(ownerTitle);
@@ -101,14 +110,21 @@ function outputOwners() {
     for (var i2 = 0; i2 < ownerPicks.length; i2++) {
       var pick = ownerPicks[i2];
 
+      var pickADPGrade = getADPGrade(pick);
+
+      if(pickADPGrade != null) {
+        ownerADPGrade = ownerADPGrade + pickADPGrade;
+      }
+
       var pickNumberInRound = pick['pick_no']-((ownerCount*pick['round'])-ownerCount);
 
       var pickCont = document.createElement('LI');
-      pickCont.appendChild(document.createTextNode(formatNumber(pick['round'])+'.'+formatNumber(pickNumberInRound)+ ' - '+pick['metadata']['first_name']+' '+pick['metadata']['last_name']));
+      pickCont.appendChild(document.createTextNode(formatNumber(pick['round'])+'.'+formatNumber(pickNumberInRound)+ ' - '+pick['metadata']['first_name']+' '+pick['metadata']['last_name'] + ' ('+pickADPGrade+')'));
       ownerPicksCont.appendChild(pickCont);
     }
 
     ownerCont.appendChild(ownerPicksCont);
+    ownerCont.appendChild(document.createTextNode('ADP Draft Grade: '+ownerADPGrade));
     picksCont.appendChild(ownerCont);
   }
 }
@@ -154,6 +170,9 @@ document.getElementById('draft-id-form').addEventListener('submit', function(ev)
     } 
   });
 });
+
+// force run on load
+document.getElementById('draft-submit').click();
 
 function getPlayerNameLengths() {
   console.log('player name lengths');
@@ -244,6 +263,61 @@ function getPlayerExperience() {
   }
 
   document.getElementById('player-exp').appendChild(cont);
+}
+
+function getADPGrades() {
+  console.log('getting ADP grade');
+
+  console.log(adpDynasty2018);
+
+  for (var i = 0; i < 1; i++) {
+    var owner = owners[i];
+
+    for (var i2 = 0; i2 < owner['picks'].length; i2++) {
+      var pick = owner['picks'][i2];
+
+      var pickADP = pick.pick_no;
+      var playerName = pick.metadata.first_name+' '+pick.metadata.last_name;
+
+      // find pick in ADP
+      var playerADPData = searchArr(playerName, adpDynasty2018.players);
+      
+      console.log('finding '+playerName);
+      console.log(playerADPData);
+
+      if(playerADPData) {
+        // found player
+        var playerADPHigh = playerADPData.high,
+            playerADPLow = playerADPData.low,
+            playerADPAvg = Math.round((playerADPHigh + playerADPLow) / 2);
+
+        console.log('pick no: ' + pickADP);
+        console.log('avg ADP: '+playerADPAvg);
+        console.log('difference: '+(pickADP - playerADPAvg));
+        console.log('----');
+      }
+    }
+  }
+}
+
+function getADPGrade(pick) {
+  var pickADP = pick.pick_no;
+  var playerName = pick.metadata.first_name+' '+pick.metadata.last_name;
+
+  // find pick in ADP
+  var playerADPData = searchArr(playerName, adpDynasty2018.players);
+
+  if(playerADPData) {
+    // found player
+    var playerADPHigh = playerADPData.high,
+        playerADPLow = playerADPData.low,
+        playerADPAvg = Math.round((playerADPHigh + playerADPLow) / 2);
+
+    return pickADP - playerADPAvg;
+  }
+  else {
+    return null;
+  }
 }
 
 
