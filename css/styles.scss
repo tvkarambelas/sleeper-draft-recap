@@ -70,6 +70,18 @@ header.row {
   }
 }
 
+li.pick {
+  color: green;
+}
+
+li.pick[data-adp-grade^="null"] {
+  color: black;
+}
+
+li.pick[data-adp-grade^="-"] {
+  color: red;
+}
+
 @media all and (min-width: 768px) {
   .cols-2 {
     display: flex;

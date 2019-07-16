@@ -19,7 +19,7 @@ function groupBy(list, keyGetter) {
 
 function searchArr(nameKey, myArray){
   for (var i=0; i < myArray.length; i++) {
-    if (myArray[i].name === nameKey) {
+    if (myArray[i].name.replace(/[^a-zA-Z ]/g, '').toLowerCase() === nameKey.replace(/[^a-zA-Z ]/g, '').toLowerCase()) {
       return myArray[i];
     }
   }
@@ -119,6 +119,8 @@ function outputOwners() {
       var pickNumberInRound = pick['pick_no']-((ownerCount*pick['round'])-ownerCount);
 
       var pickCont = document.createElement('LI');
+      pickCont.setAttribute('class','pick');
+      pickCont.setAttribute('data-adp-grade',pickADPGrade);
       pickCont.appendChild(document.createTextNode(formatNumber(pick['round'])+'.'+formatNumber(pickNumberInRound)+ ' - '+pick['metadata']['first_name']+' '+pick['metadata']['last_name'] + ' ('+pickADPGrade+')'));
       ownerPicksCont.appendChild(pickCont);
     }
